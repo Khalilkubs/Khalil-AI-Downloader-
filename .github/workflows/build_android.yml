@@ -1,14 +1,10 @@
 name: Build Android APK
 on:
   push:
-    paths: ["mobile_app/**", ".github/workflows/build_android.yml"]
   workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: mobile_app
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,12 +19,12 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: |
-            mobile_app/.buildozer
+            .buildozer
             ~/.buildozer
-          key: buildozer-${{ hashFiles('mobile_app/buildozer.spec') }}
+          key: buildozer-${{ hashFiles('buildozer.spec') }}
       - name: Build debug APK
         run: buildozer -v android debug
       - uses: actions/upload-artifact@v4
         with:
           name: KhalilDownloader-Android-APK
-          path: mobile_app/bin/*.apk
+          path: bin/*.apk
