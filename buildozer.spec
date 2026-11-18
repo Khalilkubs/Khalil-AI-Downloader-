@@ -5,7 +5,7 @@ package.domain = com.khalil
 source.dir = .
 source.include_exts = py,kv
 version = 1.0.0
-requirements = python3,kivy==2.3.0,yt-dlp,certifi,openssl,pyjnius,android
+requirements = hostpython3==3.11.9,python3==3.11.9,kivy==2.3.0,yt-dlp,certifi,openssl,pyjnius,android
 orientation = portrait
 fullscreen = 0
 android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE
