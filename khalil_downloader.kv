@@ -48,6 +48,21 @@
                     background_color: 0, 0.55, 0.7, 1
                     on_release: root.update_ytdlp()
 
+            # ---- Cookies row (needed for YouTube sign-in checks) ----
+            BoxLayout:
+                size_hint_y: None
+                height: dp(44)
+                spacing: dp(10)
+
+                FlatBtn:
+                    text: 'Paste cookies'
+                    background_color: 0.1, 0.45, 0.3, 1
+                    on_release: root.paste_cookies()
+
+                FlatBtn:
+                    text: 'Clear cookies'
+                    on_release: root.clear_cookies()
+
             # ---- URL box ----
             BoxLayout:
                 orientation: 'vertical'

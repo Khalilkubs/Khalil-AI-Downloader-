@@ -15,6 +15,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.core.window import Window
+from kivy.core.clipboard import Clipboard
 from kivy.properties import StringProperty, NumericProperty, BooleanProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -23,6 +24,7 @@ from kivy.utils import platform
 # --- yt-dlp self-update support: a downloaded copy (if any) takes priority over the bundled one ---
 DATA_DIR = os.environ.get("ANDROID_PRIVATE") or os.path.join(os.path.expanduser("~"), ".khalil_downloader")
 UPDATE_ZIP = os.path.join(DATA_DIR, "ytdlp_update", "yt_dlp.zip")
+COOKIES_PATH = os.path.join(DATA_DIR, "cookies.txt")
 if os.path.isfile(UPDATE_ZIP) and zipfile.is_zipfile(UPDATE_ZIP):
     sys.path.insert(0, UPDATE_ZIP)
 try:
@@ -143,8 +145,11 @@ class DownloadScreen(Screen):
         self.ui(f)
 
     def _opts(self):
-        return {"logger": QuietLogger(), "quiet": True, "no_warnings": True, "noplaylist": True, "no_color": True,
-                "socket_timeout": 30, "retries": 5, "noprogress": True}
+        o = {"logger": QuietLogger(), "quiet": True, "no_warnings": True, "noplaylist": True, "no_color": True,
+             "socket_timeout": 30, "retries": 5, "noprogress": True}
+        if os.path.isfile(COOKIES_PATH):
+            o["cookiefile"] = COOKIES_PATH
+        return o
 
     def _run(self, url, opts, download):
         last = None
@@ -160,7 +165,42 @@ class DownloadScreen(Screen):
         raise last
 
     def on_kv_post(self, base_widget):
-        self.show("yt-dlp " + YTDLP_VERSION)
+        self.show("yt-dlp %s | cookies: %s" % (YTDLP_VERSION, "on" if os.path.isfile(COOKIES_PATH) else "off"))
+
+    def paste_cookies(self):
+        """Save cookies copied to the clipboard (Netscape cookies.txt format) for yt-dlp."""
+        try:
+            text = (Clipboard.paste() or "").replace("\r", "")
+            lines, domains = [], set()
+            for raw in text.split("\n"):
+                line = raw.strip()
+                if not line or (line.startswith("#") and not line.startswith("#HttpOnly_")):
+                    continue
+                parts = line.split("\t") if line.count("\t") >= 6 else line.split()
+                if len(parts) == 7:
+                    lines.append("\t".join(parts))
+                    domains.add(parts[0].lstrip("#").replace("HttpOnly_", "").lstrip("."))
+            if len(lines) < 3:
+                return self.show("No cookies found in the clipboard. Copy the whole cookies.txt text first, "
+                                 "then tap Paste cookies.", ERR)
+            os.makedirs(os.path.dirname(COOKIES_PATH), exist_ok=True)
+            with open(COOKIES_PATH, "w", encoding="utf-8") as f:
+                f.write("# Netscape HTTP Cookie File\n" + "\n".join(lines) + "\n")
+            has_yt = any("youtube.com" in d or "google.com" in d for d in domains)
+            msg = "Cookies saved (%d entries)." % len(lines)
+            if not has_yt:
+                msg += " Warning: no youtube.com or google.com cookies found."
+            self.show(msg + " Try your link again.", OK if has_yt else ERR)
+        except Exception as e:
+            self.show("Cookie error: " + clean(e), ERR)
+
+    def clear_cookies(self):
+        try:
+            if os.path.isfile(COOKIES_PATH):
+                os.remove(COOKIES_PATH)
+            self.show("Cookies deleted.", OK)
+        except Exception as e:
+            self.show("Cookie error: " + clean(e), ERR)
 
     def update_ytdlp(self):
         """Download the latest yt-dlp release (checksum-verified); applies after app restart."""
