@@ -1,236 +1,245 @@
-# Khalil Video Downloader - Android UI Layout
-# Kivy Language (.kv) file
+# Khalil Video Downloader - Android UI Layout (Kivy language)
+
+<FlatBtn@Button>:
+    background_normal: ''
+    background_down: ''
+    background_disabled_normal: ''
+    background_disabled_down: ''
+    disabled_color: 1, 1, 1, 0.9
+    color: 1, 1, 1, 1
+    background_color: 0.15, 0.18, 0.25, 1
 
 <DownloadScreen>:
-    BoxLayout:
-        orientation: 'vertical'
-        padding: dp(10)
-        spacing: dp(10)
-        canvas.before:
-            Color:
-                rgba: 0.055, 0.067, 0.09, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
+    ScrollView:
+        do_scroll_x: False
+        bar_width: 0
 
-        # Header
         BoxLayout:
+            orientation: 'vertical'
             size_hint_y: None
-            height: dp(60)
-            spacing: dp(10)
-            
+            height: self.minimum_height
+            padding: dp(12)
+            spacing: dp(12)
+
+            # ---- Title ----
             Label:
                 text: 'Khalil Video Downloader'
-                font_size: dp(20)
+                font_size: dp(22)
                 bold: True
                 color: 0, 1, 0.533, 1
-                halign: 'left'
-                valign: 'middle'
-            
-            Button:
-                text: 'History'
-                size_hint_x: None
-                width: dp(100)
-                background_color: 0.15, 0.18, 0.25, 1
-                color: 1, 1, 1, 1
-                on_release: app.root.current = 'history'
-
-            Button:
-                text: 'Update'
-                size_hint_x: None
-                width: dp(80)
-                background_color: 0, 0.831, 1, 1
-                color: 0, 0, 0, 1
-                on_release: root.update_ytdlp()
-
-        # URL Input Section
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            height: dp(110)
-            spacing: dp(5)
-            canvas.before:
-                Color:
-                    rgba: 0.1, 0.12, 0.16, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
-            Label:
-                text: 'Enter Video URL'
-                font_size: dp(14)
-                color: 0.69, 0.69, 0.69, 1
                 size_hint_y: None
-                height: dp(20)
+                height: dp(44)
+                text_size: self.size
                 halign: 'left'
                 valign: 'middle'
 
-            TextInput:
-                id: url_input
-                hint_text: 'https://www.youtube.com/watch?v=...'
-                multiline: False
-                font_size: dp(14)
-                background_color: 0.08, 0.1, 0.13, 1
-                foreground_color: 1, 1, 1, 1
-                cursor_color: 0, 1, 0.533, 1
-                size_hint_y: None
-                height: dp(45)
-                padding: [dp(10), dp(10)]
-
+            # ---- Menu row ----
             BoxLayout:
                 size_hint_y: None
-                height: dp(40)
+                height: dp(44)
                 spacing: dp(10)
 
-                Button:
-                    id: fetch_btn
-                    text: 'Fetch Info'
-                    background_color: 0, 0.831, 1, 1
-                    color: 0, 0, 0, 1
-                    bold: True
-                    on_release: root.fetch_video_info()
+                FlatBtn:
+                    text: 'History'
+                    on_release: app.root.current = 'history'
 
-                Spinner:
-                    id: quality_spinner
-                    text: 'Best'
-                    values: ['Best', '720p', '480p', '360p', 'Audio (m4a)']
-                    background_color: 0.15, 0.18, 0.25, 1
-                    color: 1, 1, 1, 1
-                    size_hint_x: None
-                    width: dp(150)
+                FlatBtn:
+                    text: 'Update yt-dlp'
+                    background_color: 0, 0.55, 0.7, 1
+                    on_release: root.update_ytdlp()
 
-        # Video Info Section
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            height: dp(180)
-            spacing: dp(10)
-            padding: dp(10)
-            canvas.before:
-                Color:
-                    rgba: 0.1, 0.12, 0.16, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-            opacity: 1 if root.has_video_info else 0
-
-            Label:
-                text: root.video_title
-                font_size: dp(16)
-                bold: True
-                color: 1, 1, 1, 1
-                size_hint_y: None
-                height: dp(40)
-                text_size: self.width - 20, None
-                halign: 'left'
-                valign: 'top'
-
+            # ---- URL box ----
             BoxLayout:
+                orientation: 'vertical'
                 size_hint_y: None
-                height: dp(30)
-                spacing: dp(20)
+                height: self.minimum_height
+                padding: dp(10)
+                spacing: dp(8)
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.12, 0.16, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
                 Label:
-                    text: '' + root.video_uploader
-                    font_size: dp(12)
-                    color: 0.69, 0.69, 0.69, 1
+                    text: 'Video link'
+                    font_size: dp(13)
+                    color: 0.7, 0.7, 0.7, 1
+                    size_hint_y: None
+                    height: dp(20)
+                    text_size: self.size
                     halign: 'left'
-
-                Label:
-                    text: '⏱' + root.video_duration
-                    font_size: dp(12)
-                    color: 0.69, 0.69, 0.69, 1
-                    halign: 'left'
-
-                Label:
-                    text: root.video_views
-                    font_size: dp(12)
-                    color: 0.69, 0.69, 0.69, 1
-                    halign: 'left'
-
-            BoxLayout:
-                size_hint_y: None
-                height: dp(60)
-                padding: dp(5)
-
-                Label:
-                    text: 'Video info will appear here after fetching'
-                    font_size: dp(12)
-                    color: 0.5, 0.5, 0.5, 1
-                    halign: 'center'
                     valign: 'middle'
 
-        # Progress Section
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            height: dp(120)
-            spacing: dp(5)
-            padding: dp(10)
-            canvas.before:
-                Color:
-                    rgba: 0.1, 0.12, 0.16, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+                TextInput:
+                    id: url_input
+                    hint_text: 'Paste the video link here'
+                    multiline: False
+                    font_size: dp(14)
+                    background_color: 0.08, 0.1, 0.13, 1
+                    foreground_color: 1, 1, 1, 1
+                    hint_text_color: 0.5, 0.5, 0.5, 1
+                    cursor_color: 0, 1, 0.533, 1
+                    size_hint_y: None
+                    height: dp(48)
+                    padding: [dp(10), dp(14), dp(10), dp(10)]
 
-            Label:
-                text: root.status_text
-                font_size: dp(14)
-                bold: True
-                color: 0, 1, 0.533, 1
-                size_hint_y: None
-                height: dp(25)
-                halign: 'center'
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(46)
+                    spacing: dp(10)
 
-            ProgressBar:
-                value: root.progress
-                max: 100
-                size_hint_y: None
-                height: dp(20)
+                    FlatBtn:
+                        id: fetch_btn
+                        text: 'Fetch Info'
+                        bold: True
+                        color: 0, 0, 0, 1
+                        background_color: 0, 0.831, 1, 1
+                        on_release: root.fetch_video_info()
 
+                    Spinner:
+                        id: quality_spinner
+                        text: 'Best'
+                        values: ['Best', '720p', '480p', '360p', 'Audio (m4a)']
+                        background_normal: ''
+                        background_color: 0.15, 0.18, 0.25, 1
+                        color: 1, 1, 1, 1
+                        size_hint_x: None
+                        width: dp(140)
+
+            # ---- Video info (only shown after Fetch Info) ----
             BoxLayout:
+                orientation: 'vertical'
                 size_hint_y: None
-                height: dp(25)
-                spacing: dp(20)
+                height: self.minimum_height if root.has_video_info else 0
+                opacity: 1 if root.has_video_info else 0
+                padding: dp(10)
+                spacing: dp(6)
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.12, 0.16, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
                 Label:
-                    text: root.speed_text
-                    font_size: dp(12)
-                    color: 0.69, 0.69, 0.69, 1
+                    text: root.video_title
+                    font_size: dp(15)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    size_hint_y: None
+                    height: dp(66)
+                    text_size: self.width, self.height
+                    max_lines: 3
+                    shorten: True
+                    shorten_from: 'right'
                     halign: 'left'
+                    valign: 'top'
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(24)
+                    spacing: dp(8)
+
+                    Label:
+                        text: root.video_uploader
+                        font_size: dp(12)
+                        color: 0.7, 0.7, 0.7, 1
+                        text_size: self.size
+                        shorten: True
+                        halign: 'left'
+                        valign: 'middle'
+
+                    Label:
+                        text: root.video_duration
+                        font_size: dp(12)
+                        color: 0.7, 0.7, 0.7, 1
+                        text_size: self.size
+                        halign: 'center'
+                        valign: 'middle'
+
+                    Label:
+                        text: root.video_views
+                        font_size: dp(12)
+                        color: 0.7, 0.7, 0.7, 1
+                        text_size: self.size
+                        shorten: True
+                        halign: 'right'
+                        valign: 'middle'
+
+            # ---- Progress ----
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(10)
+                spacing: dp(6)
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.12, 0.16, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
                 Label:
-                    text: root.eta_text
-                    font_size: dp(12)
-                    color: 0.69, 0.69, 0.69, 1
-                    halign: 'right'
+                    text: root.status_text
+                    font_size: dp(15)
+                    bold: True
+                    color: 0, 1, 0.533, 1
+                    size_hint_y: None
+                    height: dp(26)
 
-        # Download Button
-        BoxLayout:
-            size_hint_y: None
-            height: dp(60)
-            padding: dp(20)
+                ProgressBar:
+                    value: root.progress
+                    max: 100
+                    size_hint_y: None
+                    height: dp(14)
 
-            Button:
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(24)
+                    spacing: dp(10)
+
+                    Label:
+                        text: root.speed_text
+                        font_size: dp(12)
+                        color: 0.7, 0.7, 0.7, 1
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+
+                    Label:
+                        text: root.eta_text
+                        font_size: dp(12)
+                        color: 0.7, 0.7, 0.7, 1
+                        text_size: self.size
+                        halign: 'right'
+                        valign: 'middle'
+
+            # ---- Download button ----
+            FlatBtn:
                 id: download_btn
                 text: 'Download'
                 font_size: dp(18)
                 bold: True
-                background_color: 0, 1, 0.533, 1
                 color: 0, 0, 0, 1
-                disabled_color: 0.3, 0.3, 0.3, 0.5
+                size_hint_y: None
+                height: dp(56)
+                background_color: (0, 1, 0.533, 1) if not self.disabled else (0.1, 0.45, 0.3, 1)
                 on_release: root.start_download()
 
-        # Status Label
-        Label:
-            id: status_label
-            text: '100% private. Downloads saved to phone storage.'
-            font_size: dp(11)
-            color: 0.5, 0.5, 0.5, 1
-            size_hint_y: None
-            height: dp(20)
-            halign: 'center'
+            # ---- Messages / errors ----
+            Label:
+                id: status_label
+                text: 'Downloads are saved to your phone Downloads folder.'
+                font_size: dp(13)
+                color: 0.75, 0.75, 0.75, 1
+                size_hint_y: None
+                height: max(self.texture_size[1] + dp(10), dp(34))
+                text_size: self.width, None
+                halign: 'center'
+                valign: 'top'
 
 <HistoryScreen>:
     BoxLayout:
