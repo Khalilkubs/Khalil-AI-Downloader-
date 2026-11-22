@@ -2,6 +2,12 @@
 import os, re, sys, json, shutil, mimetypes, threading, zipfile, hashlib, ssl, urllib.request
 from datetime import datetime
 
+import os as _os
+if sys.stdout is None:
+    sys.stdout = open(_os.devnull, "w")
+if sys.stderr is None:
+    sys.stderr = open(_os.devnull, "w")
+
 import certifi
 os.environ.setdefault("SSL_CERT_FILE", certifi.where())
 
@@ -46,6 +52,13 @@ FORMATS = {
     "Audio (m4a)": "bestaudio[ext=m4a]/bestaudio",
 }
 YT_CLIENTS = [None, ["tv"], ["android_vr"], ["mweb"]]  # fallbacks if default YouTube client fails
+
+
+class QuietLogger:
+    def debug(self, msg): pass
+    def info(self, msg): pass
+    def warning(self, msg): pass
+    def error(self, msg): pass
 
 
 def clean(msg):
@@ -130,7 +143,7 @@ class DownloadScreen(Screen):
         self.ui(f)
 
     def _opts(self):
-        return {"quiet": True, "no_warnings": True, "noplaylist": True, "no_color": True,
+        return {"logger": QuietLogger(), "quiet": True, "no_warnings": True, "noplaylist": True, "no_color": True,
                 "socket_timeout": 30, "retries": 5, "noprogress": True}
 
     def _run(self, url, opts, download):
